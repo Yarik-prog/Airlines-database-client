@@ -1,38 +1,46 @@
-import React from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import {Form, FormGroup, Label, Input, Button } from "reactstrap";
+import {FormGroup, Button } from "reactstrap";
 const Crew = ()=> {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [crewTypes] = useState([
+  {id:1, name:"Екіпаж"}, 
+  {id:2, name:"Техн. обслуговування"}
+])
 
   const onSubmit = data => {
-    console.log(data);
+    //console.log(data);
     axios.post(`http://localhost:3030/api/crew`,data)
-    .then(res => { console.log(res)})
-    .catch(err=>{console.log("Smth went wrong",err)})
+    .then(res => { alert(`Success: ${res.data}`)})
+    .catch(err=>{alert("Smth went wrong")})
   }
 
 
   return (
-      <div style={{width:350,margin:'50px auto'}}>
-    <Form onSubmit={handleSubmit(onSubmit)}>
+  
+    <form onSubmit={handleSubmit(onSubmit)}>
 
     <FormGroup row>
-        <Label for="crew_num">Номер групи</Label>
+        <label htmlFor="crew_num">Номер групи</label>
      
-      <input type="number" id="crew_num" {...register("crew_num")} />
+      <input type="number" id="crew_num" {...register("crew_num", {required:true})} />
+      {errors.crew_num && <span style={{color:'red'}}>this field is required</span>}
       
     </FormGroup>
 
     <FormGroup row>
-      <Label for="type_crew">Тип групи</Label>
-     
-      <input id="type_crew" {...register("type_crew")} />
+      <label htmlFor="type_crew">Тип групи</label>
+      <select {...register("type_crew")} >
+      {crewTypes.map(type=>(
+        <option key={type.id} value={type.name}>{type.name}</option>
+      ))}
+      </select>
   
     </FormGroup>
       <Button color="primary"> Submit </Button>
-    </Form>
-    </div>
+    </form>
+
   );
 }
 

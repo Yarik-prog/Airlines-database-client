@@ -10,6 +10,8 @@ import Flight from './components/flight';
 import Passenger from './components/passenger';
 import Ticket from './components/ticket';
 
+import RouteQuery from './components/Route.query';
+
 
 function App() {
   return (
@@ -43,9 +45,12 @@ function App() {
     <div>
     <Link to="/ticket">ticket</Link>
   </div>
+  <div>
+    <Link to="/route/query">Route query</Link>
+  </div>
 </div>
     <Route path="/company" component={AviaCompany} />
-    <Route path="/route" component={Routes} />
+    <Route path="/route" exact component={Routes} />
     <Route path="/crew" component={Crew} />
     <Route path="/staff" component={Staff} />
     <Route path="/plane" component={Plane} />
@@ -53,6 +58,7 @@ function App() {
     <Route path="/flight" component={Flight} />
     <Route path="/passenger" component={Passenger} />
     <Route path="/ticket" component={Ticket} />
+    <Route path="/route/query" component={RouteQuery} />
   </div>
     </Router>
   );

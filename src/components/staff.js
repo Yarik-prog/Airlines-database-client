@@ -1,9 +1,9 @@
 import React,{useState, useEffect} from "react";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
+import { useForm} from "react-hook-form";
+import { FormGroup, Button } from "reactstrap";
 const Staff = ()=> {
-  const { register, handleSubmit, control, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [crews, setCrews] = useState([]);
 
   useEffect(() => {
@@ -19,40 +19,41 @@ const Staff = ()=> {
   if(!data.crew_num){data.crew_num = null}
   if(!data.flight_hours){data.flight_hours = null}
     axios.post(`http://localhost:3030/api/staff`,data)
-    .then(res => { console.log("Success",res.data)})
-    .catch(err=>{console.log("Smth went wrong",err)})
+    .then(res => { alert(`Success: ${res.data}`)})
+    .catch(err=>{  alert("Smth went wrong")})
   }
 
  
   return (
-      <div style={{width:350,margin:'50px auto'}}>
-    <Form onSubmit={handleSubmit(onSubmit)}>
+  
+    <form onSubmit={handleSubmit(onSubmit)}>
 
     <FormGroup row>
-        <Label for="fullname_staff">ПІБ</Label>
+        <label htmlFor="fullname_staff">ПІБ</label>
      
       <input id="fullname_staff" {...register("fullname_staff",{ required: true })} />
-      {errors.fullname_staff && <span>This field is required</span>}
+      {errors.fullname_staff && <span>this field is required</span>}
       
     </FormGroup>
 
     <FormGroup row>
-      <Label for="work_position">Посада</Label>
+      <label htmlFor="work_position">Посада</label>
      
       <input id="work_position" {...register("work_position",{ required: true })} />
-      {errors.work_position && <span>This field is required</span>}
+      {errors.work_position && <span>this field is required</span>}
   
     </FormGroup>
 
     <FormGroup row>
-      <Label for="flight_hours">Кількість годин в польоті</Label>
+      <label htmlFor="flight_hours">Кількість годин в польоті</label>
      
-      <input type="number" id="flight_hours" {...register("flight_hours")} />
+      <input type="number" id="flight_hours" {...register("flight_hours",{min:100, max:30000})} />
+      {errors.flight_hours && <span>value must be in range(100-30000)</span>}
   
     </FormGroup>
 
     <FormGroup row>
-      <Label for="crew_num">Група</Label>
+      <label htmlFor="crew_num">Група</label>
       <select {...register("crew_num")} >
 {crews.map((crew)=>(
        <option key={crew.crew_id} value={crew.crew_num}>{crew.crew_num} {crew.type_crew}</option>
@@ -62,8 +63,7 @@ const Staff = ()=> {
     </FormGroup>
 
       <Button color="primary"> Submit </Button>
-    </Form>
-    </div>
+    </form>
   );
 }
 

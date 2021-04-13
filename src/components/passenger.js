@@ -1,74 +1,87 @@
-import React from "react";
-import DateTimePicker from 'react-datetime-picker';
-import { useForm } from "react-hook-form";
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
+import React, {useState} from "react";
+import axios from "axios";
+import DatePicker from "react-datepicker";
+import { useForm} from "react-hook-form";
+import { FormGroup, Button } from "reactstrap";
+import "react-datepicker/dist/react-datepicker.css";
+
 const Passenger = ()=> {
   const { register, handleSubmit, formState: { errors } } = useForm();
   
+  const [bookDate, setBookDate] = useState(new Date());
+  const [visaType] = useState([
+    {id:1,name:"туристична"}, 
+    {id:2,name:"бізнес"}, 
+    {id:3,name:"робоча"}, 
+    {id:4,name:"студентська"}, 
+    {id:5,name:"дипломатична"}, 
+    {id:6,name:"імміграційна"}, 
+    {id:7,name:"журналістська"}, 
+    {id:8,name:"транзитна"}
+  ])
+
   const onSubmit = data => {
-    console.log(data);
-    //axios.post(`http://localhost:3030/api/passenger`,data)
-   // .then(res => { console.log(res)})
-   // .catch(err=>{console.log("Smth went wrong",err)})
+    data.book_date = `${bookDate.getUTCFullYear()}-${(bookDate.getUTCMonth()+1)}-${bookDate.getUTCDate()}`
+   // console.log(data)
+    axios.post(`http://localhost:3030/api/passenger`,data)
+    .then(res => { alert(`Success: ${res.data}`)})
+    .catch(err=>{ alert("Smth went wrong")})
   }
 
   
   return (
-      <div style={{width:350,margin:'50px auto'}}>
-    <Form onSubmit={handleSubmit(onSubmit)}>
+ 
+    <form onSubmit={handleSubmit(onSubmit)}>
 
     <FormGroup row>
-        <Label for="fullname_passenger">ПІБ пасажира</Label>
+        <label htmlFor="fullname_passenger">ПІБ пасажира</label>
      
-      <input id="fullname_passenger" {...register("fullname_passenger")} />
+      <input id="fullname_passenger" {...register("fullname_passenger",{required:true})} />
+      {errors.fullname_passenger && <span style={{color:'red'}}>this field is required</span>}
+    </FormGroup>
+
+    <FormGroup row>
+      <label htmlFor="book_date">Дата бронювання</label>
+     
+      <DatePicker 
+    selected={bookDate} 
+    onChange={date => setBookDate(date)} 
+    dateFormat="yyyy-MM-dd"
+    />
+
+    </FormGroup>
+
+    <FormGroup row>
+      <label htmlFor="passport_number">Номер паспорту</label>
+     
+      <input type="number" id="passport_number" {...register("passport_number",{pattern: /^([0-9]{6})$/i})} />
+      {errors.passport_number && <span style={{color:'red'}}>invalid passport number</span>}
+  
+    </FormGroup>
+
+    <FormGroup row>
+      <label htmlFor="phone_number">Номер телефону</label>
+     
+      <input type="tel" name="phone_number" {...register("phone_number",{pattern: /^\+?3?8?(0\d{9})$/i})}/>
+      {errors.phone_number && <span style={{color:'red'}}>invalid phone number</span>}
+  
+    </FormGroup>
       
-    </FormGroup>
 
     <FormGroup row>
-      <Label for="passport_number">Номер паспорту</Label>
+      <label htmlFor="visa">Віза</label>
      
-      <input id="passport_number" {...register("passport_number")} />
+      <select {...register("visa")} >
+      {visaType.map(visa=>(
+        <option key={visa.id} value={visa.name}> {visa.name} </option>
+      ))}
+      </select>
   
     </FormGroup>
-
-    <FormGroup row>
-      <Label for="book_date">Дата бронювання</Label>
-     
-      <input id="book_date" {...register("book_date")} />
-  
-    </FormGroup>
-
-    <FormGroup row>
-      <Label for="visa">Віза</Label>
-     
-      <input id="visa" {...register("visa")} />
-  
-    </FormGroup>
-    
-    <FormGroup row>
-      <Label for="ticket_num">Номер білету</Label>
-     
-      <input id="ticket_num" {...register("ticket_num")} />
-  
-    </FormGroup>
-
-    <FormGroup row>
-      <Label for="luggage_code">Код багажу</Label>
-     
-      <input id="luggage_code" {...register("luggage_code")} />
-  
-    </FormGroup>
-
-    <FormGroup row>
-      <Label for="weight">Вага багажу</Label>
-     
-      <input id="weight" {...register("weight")} />
-  
-    </FormGroup>
-
+   
       <Button color="primary"> Submit </Button>
-    </Form>
-    </div>
+    </form>
+
   );
 }
 

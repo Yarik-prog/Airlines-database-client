@@ -1,0 +1,48 @@
+form{
+    width:380px;
+    margin:50px auto;
+}
+
+input{
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+    border-radius:4px;
+    outline:none; 
+    border:1px solid #CED4DA;
+    padding: 8px 15px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color:#495057;
+  
+}
+label {
+    text-align: left;
+    display: block;
+    font-size: 22px;
+    font-weight: 400;
+    color:#495057;
+  }
+
+button {
+    display: block;
+    appearance: none;
+    margin-top: 40px;
+    border: 1px solid #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 4px;
+  }
+
+select{
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+    border-radius:4px;
+    outline:none; 
+    border:1px solid #CED4DA;
+    padding: 8px 15px;
+    margin-bottom: 10px;
+    color:#495057;
+  }

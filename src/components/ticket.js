@@ -1,68 +1,78 @@
-import React from "react";
+import React, {useState} from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
+import { FormGroup, Button } from "reactstrap";
 const Ticket = ()=> {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const onSubmit = data => console.log(data);
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [classTypes] = useState([
+    {id:1,name:"економ"}, 
+    {id:2,name:"бізнес"}, 
+    {id:3,name:"перший"}, 
+  ])
 
-  console.log(watch("example")); 
+  const onSubmit = data => {
+    console.log(data)
+    if(!data.passenger_id){data.passenger_id = null}
+    axios.post(`http://localhost:3030/api/ticket`,data)
+   .then(res => { console.log(res.data)})
+    .catch(err=>{console.log("Smth went wrong",err)})
+  }
+
   return (
-      <div style={{width:350,margin:'50px auto'}}>
-    <Form onSubmit={handleSubmit(onSubmit)}>
+
+    <form onSubmit={handleSubmit(onSubmit)}>
 
     <FormGroup row>
-        <Label for="ticket_num">Номер білету</Label>
+        <label htmlFor="ticket_num">Номер білету</label>
      
-      <Input id="ticket_num" {...register("example")} />
+      <input id="ticket_num" {...register("ticket_num",{required:true})} />
+      {errors.ticket_num && <span>This field is required</span>}
       
     </FormGroup>
 
     <FormGroup row>
-      <Label for="seat_num">Номер місця</Label>
+      <label htmlFor="seat_num">Номер місця</label>
      
-      <Input id="seat_num" {...register("example")} />
+      <input type="number" id="seat_num" {...register("seat_num",{required:true})} />
+      {errors.seat_num && <span>This field is required</span>}
   
     </FormGroup>
 
     <FormGroup row>
-      <Label for="cost_ua">Ціна</Label>
+      <label htmlFor="cost_ua">Ціна</label>
      
-      <Input id="cost_ua" {...register("example")} />
+      <input type="number" id="cost_ua" {...register("cost_ua",{min:3000, max:100000})} />
+      {errors.cost_ua && <span>price must be range(3000-100000)</span>}
   
     </FormGroup>
 
     <FormGroup row>
-      <Label for="type_class">Класс</Label>
+      <label htmlFor="type_class">Класс</label>
      
-      <Input id="type_class" {...register("example")} />
+      <select {...register("type_class")} >
+      {classTypes.map(obj=>(
+        <option key={obj.id} value={obj.name}>{obj.name}</option>
+      ))}
+</select>
   
     </FormGroup>
     
     <FormGroup row>
-      <Label for="ticket_status">Статус білету</Label>
+      <label htmlFor="ticket_status">Статус білету</label>
      
-      <Input id="ticket_status" {...register("example")} />
+      <input type="text" id="ticket_status" {...register("ticket_status")} />
   
     </FormGroup>
 
     <FormGroup row>
-      <Label for="passenger_id">Пасажир</Label>
+      <label htmlFor="passenger_id">Пасажир</label>
      
-      <Input id="passenger_id" {...register("example")} />
-  
-    </FormGroup>
-
-    <FormGroup row>
-      <Label>test2</Label>
-     
-      <Input {...register("exampleRequired", { required: true })} />
-      {errors.exampleRequired && <span>This field is required</span>}
+      <input id="passenger_id" {...register("passenger_id")} />
   
     </FormGroup>
 
       <Button color="primary"> Submit </Button>
-    </Form>
-    </div>
+    </form>
   );
 }
 

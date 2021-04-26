@@ -1,15 +1,35 @@
 import React,{useState, useEffect} from "react";
 import axios from "axios";
+import { BrowserRouter as Router, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
-import {FormGroup, Button } from "reactstrap";
+import {FormGroup} from "reactstrap";
 const PlaneMaintanance = ()=> {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+  const [maintance, setMaintance] = useState({})
   const [crews, setCrews] = useState([]);
   const [planes, setPlanes] = useState([]);
   const [dateEvent, setDateEvent] = useState(new Date());
   
-  
+  const {id} = useParams()
+  useEffect(()=>{
+    if(id){
+      axios.get(`http://localhost:3030/api/maintenance/${id}`,{})
+      .then(res => { 
+        setMaintance(res.data[0])
+        setDateEvent(new Date(res.data[0].event_date))
+      })
+    .catch(err=>{alert("Smth went wrong")})
+    }
+  },[])
+
+  useEffect(() => {
+    if (maintance) {
+      setValue("service_crew_num", maintance.service_crew_num );
+      setValue("tail_code", maintance.tail_code );
+      setValue("result", maintance.result );
+    }
+  }, [maintance]);
 
   useEffect(() => {
     axios.get(`http://localhost:3030/api/crew`)
@@ -30,21 +50,26 @@ const PlaneMaintanance = ()=> {
   },[setPlanes]);
 
   const onSubmit = data => {
-    console.log(data);
-    console.log("Crews",crews);
+    console.log(data)
+    if(id){
+      data.event_date = dateEvent
+      axios.put(`http://localhost:3030/api/maintenance/${id}`,data)
+      .then(res => { alert(`Success`)})
+      .catch(err=>{alert("Smth went wrong")})
+    }else{
     data.event_date = dateEvent
-    //axios.post(`http://localhost:3030/api/crew`,data)
-   // .then(res => { console.log(res)})
-   // .catch(err=>{console.log("Smth went wrong",err)})
+    axios.post(`http://localhost:3030/api/maintenance`,data)
+   .then(res => { alert(`Succes: ${res.data}`)})
+   .catch(err=>{ alert("Smth went wrong")})
   }
-
+}
   const getCrews = (data)=>{
     data = data.filter(obj=>{
       if (obj.type_crew == "Техн. обслуговування") return true
       else return false
     })
     return data.map((crew)=>(
-      <option key={crew.crew_id} value={crew.crew_num}>{crew.crew_num} {crew.type_crew}</option>
+      <option key={crew.crew_id} value={crew.crew_id}>{crew.crew_num} {crew.type_crew}</option>
     ))
   }
 
@@ -64,8 +89,7 @@ const PlaneMaintanance = ()=> {
       <DatePicker 
     selected={dateEvent} 
     onChange={date => setDateEvent(date)} 
-    dateFormat="yyyy-MM-dd hh:mm"
-    showTimeSelect
+    dateFormat="yyyy-MM-dd"
     />
       
     </FormGroup>
@@ -90,11 +114,14 @@ const PlaneMaintanance = ()=> {
     <FormGroup row>
       <label htmlFor="result">Результат проведення тех. обслуговування</label>
      
-      <input type="text" id="result" {...register("result")} />
+      <textarea type="text" id="result" {...register("result")} />
   
     </FormGroup>
 
-      <Button color="primary"> Submit </Button>
+    <button type="submit"> 
+     {id && <span>Edit</span>}
+     {!id && <span>Create</span>}
+      </button>
     </form>
   );
 }

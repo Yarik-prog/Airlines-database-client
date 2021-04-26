@@ -1,0 +1,21 @@
+ul{
+    list-style-type: none;
+}
+.link{
+    display: block;
+    margin-top: 30px;
+    background-color: #8b00ff;
+    width: 250px;
+    color:white;
+    padding: 20px 20px;
+    text-align: center;
+    border-radius: 4px;
+    transition: 0.3s background-color ease-in-out, 0.3s box-shadow ease-in-out;
+}
+.link:link{
+    text-decoration: none;
+}
+.link:hover{
+    color:white;
+    background-color: #a233ff;
+}
